@@ -1,7 +1,7 @@
 $DB_NAME = "postgres"
 $DB_USER = "postgres"
 $DB_HOST = "localhost"
-$BACKUP_DIR = "C:\Users\USER\Desktop\postgreSQL_backup\backups"
+$BACKUP_DIR = "C:\Users\Administrator\Desktop\postgreSQL_backup\backups"
 $TIMESTAMP = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 $BACKUP_FILE = "$BACKUP_DIR\backup_$TIMESTAMP.sqlc"
 
@@ -11,7 +11,7 @@ if (!(Test-Path $BACKUP_DIR)) {
 }
 
 # Run pg_dump
-$env:PGPASSWORD = "M123m321m"
+$env:PGPASSWORD = "HamedMobina1234"
 pg_dump -U $DB_USER -h $DB_HOST -F c -f $BACKUP_FILE $DB_NAME
 
 # Optional: Delete old backups (keep last 24 backups)
