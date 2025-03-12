@@ -1,6 +1,7 @@
 import subprocess
 import os
 import time
+import requests
 
 # Path to your PowerShell script
 ps_script_path = r"C:\Users\USER\Desktop\postgreSQL_backup\backup_postgres.ps1"
@@ -29,6 +30,32 @@ def get_backup():
         print(f"Error occurred while running PowerShell script: {e}")
         print("Error output:", e.stderr)
 
+    # Find the latest .sqlc backup file
+    latest_backup = None
+    for file_name in os.listdir(backup_folder):
+        if file_name.endswith(".sqlc"):
+            file_path = os.path.join(backup_folder, file_name)
+            if latest_backup is None or os.path.getmtime(file_path) > os.path.getmtime(latest_backup):
+                latest_backup = file_path
+
+    if latest_backup:
+        print(f"Found latest backup: {latest_backup}")
+        send_backup_to_telegram(latest_backup)
+    else:
+        print("No .sqlc backup found.")
+
+# Telegram bot details
+TELEGRAM_API_URL = "https://api.telegram.org/bot7624564348:AAGDgGcIJOP7sBG8m4eXJ1NuNJTtSNZajvg/sendDocument"
+CHAT_ID = "121498617"
+
+def send_backup_to_telegram(file_path):
+    with open(file_path, 'rb') as file:
+        response = requests.post(TELEGRAM_API_URL, data={'chat_id': CHAT_ID}, files={'document': file})
+        if response.status_code == 200:
+            print("Backup sent successfully to Telegram!")
+        else:
+            print(f"Failed to send backup to Telegram: {response.text}")
+
 while True:
     get_backup()
-    time.sleep(60*10)  # wait for ten minutes before checking again
+    time.sleep(60 * 10)  # Wait for ten minutes before checking again
